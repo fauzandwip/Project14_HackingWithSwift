@@ -76,6 +76,12 @@ class GameScene: SKScene {
         
         whackSlot.hit()
         
+        if let smoke = SKEmitterNode(fileNamed: "smoke") {
+            smoke.position = CGPoint(x: 0, y: 40)
+            smoke.zPosition = 1
+            whackSlot.addChild(smoke)
+        }
+        
         if charNode.name == "charFriend" {
             score -= 5
             
@@ -147,6 +153,17 @@ class GameScene: SKScene {
         gameOver.position = CGPoint(x: 512, y: 384)
         gameOver.zPosition = 2
         addChild(gameOver)
+        
+        let finalScore = SKLabelNode(fontNamed: "Chalkduster")
+        finalScore.text = "Final Score: \(score)"
+        finalScore.fontSize = 40
+        finalScore.zPosition = 2
+        finalScore.position = CGPoint(x: 0, y: -50)
+        finalScore.verticalAlignmentMode = .top
+    
+        gameOver.addChild(finalScore)
+        
+        run(SKAction.playSoundFileNamed("gameover.mp3", waitForCompletion: false))
     }
     
     func restartTapped() {
