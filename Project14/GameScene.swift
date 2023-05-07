@@ -11,6 +11,9 @@ import GameplayKit
 class GameScene: SKScene {
     
     var gameScore: SKLabelNode!
+    var gameOver: SKSpriteNode!
+    var restart: SKLabelNode!
+    
     var score = 0 {
         didSet {
             gameScore.text = "Score: \(score)"
@@ -19,6 +22,7 @@ class GameScene: SKScene {
     
     var slots = [WhackSlot]()
     var popupTime = 0.85
+    var numRounds = 0
     
     override func didMove(to view: SKView) {
         
@@ -34,16 +38,35 @@ class GameScene: SKScene {
         gameScore.horizontalAlignmentMode = .left
         gameScore.fontSize = 48
         addChild(gameScore)
-       
+        
+        restart = SKLabelNode(fontNamed: "Chalkduster")
+        restart.text = "Restart"
+        restart.position = CGPoint(x: 20, y: 700)
+        restart.horizontalAlignmentMode = .left
+        restart.zPosition = 1
+        addChild(restart)
+        
         createSlots()
-        createEnemy()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.createEnemy()
+        }
         
     }
-
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let positon = touch.location(in: self)
         let nodesTapped = nodes(at: positon)
+        
+        if nodesTapped.contains(restart) {
+            self.restartTapped()
+        }
+        
+        // for sure the correct node is WhackSlot
+        // for node in tappedNodes {
+        //            guard let whackSlot = node.parent?.parent as? WhackSlot else { continue }
+        //            if !whackSlot.isVisible { continue }
+        //            if whackSlot.isHit { continue }
         
         let charNode = nodesTapped[0]
         
@@ -85,6 +108,20 @@ class GameScene: SKScene {
     }
     
     func createEnemy() {
+        numRounds += 1
+        
+        if numRounds > 30 {
+            for slot in slots {
+                slot.hit()
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.createGameOver()
+            }
+            
+            return
+        }
+        
         popupTime *= 0.991
         
         slots.shuffle()
@@ -100,6 +137,33 @@ class GameScene: SKScene {
         let delay = Double.random(in: minDelay...maxDelay)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.createEnemy()
+        }
+    }
+    
+    func createGameOver() {
+        gameOver = SKSpriteNode(imageNamed: "gameOver")
+        gameOver.name = "gameOver"
+        gameOver.position = CGPoint(x: 512, y: 384)
+        gameOver.zPosition = 2
+        addChild(gameOver)
+    }
+    
+    func restartTapped() {
+        score = 0
+        numRounds = 0
+        popupTime = 0.85
+        
+        for slot in slots {
+            slot.charNode.position = CGPoint(x: 0, y: -90)
+        }
+        
+        //        gameOver.run(SKAction.removeFromParent())
+        self.enumerateChildNodes(withName: "gameOver") { node, stop in
+            node.run(SKAction.removeFromParent())
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.createEnemy()
         }
     }

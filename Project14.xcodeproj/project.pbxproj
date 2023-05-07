@@ -71,8 +71,6 @@
 				7B0C49772A063EC400D2FD38 /* Main.storyboard */,
 				7B0C497A2A063EC600D2FD38 /* Assets.xcassets */,
 				7B0C497C2A063EC600D2FD38 /* LaunchScreen.storyboard */,
-				7B0C49852A0641CD00D2FD38 /* whack.caf */,
-				7B0C49842A0641CD00D2FD38 /* whackBad.caf */,
 				7B0C49862A0641D500D2FD38 /* Sound */,
 			);
 			path = Project14;
@@ -81,6 +79,8 @@
 		7B0C49862A0641D500D2FD38 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				7B0C49852A0641CD00D2FD38 /* whack.caf */,
+				7B0C49842A0641CD00D2FD38 /* whackBad.caf */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
