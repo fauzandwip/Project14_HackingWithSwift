@@ -44,8 +44,22 @@ class WhackSlot: SKNode {
             charNode.texture = SKTexture(imageNamed: "penguinGood")
             charNode.name = "charFriend"
         } else {
-            charNode.texture = SKTexture(imageNamed: "penguinBad")
+            charNode.texture = SKTexture(imageNamed: "penguinEvil")
             charNode.name = "charEnemy"
         }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + (hideTime * 3.5)) { [weak self] in
+            self?.hide()
+        }
+    }
+    
+    func hide() {
+        if !isVisible { return }
+        
+        let delay = SKAction.wait(forDuration: 0.15)
+        let hide = SKAction.moveBy(x: 0, y: -80, duration: 0.3)
+        let notVisible = SKAction.run { [unowned self] in isVisible = false}
+        
+        charNode.run(SKAction.sequence([delay, hide, notVisible]))
     }
 }
